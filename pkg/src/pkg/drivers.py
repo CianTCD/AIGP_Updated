@@ -122,8 +122,6 @@ class AnotherDriver:
 
         return speed, steering_angle
 
-import numpy as np
-
 
 class DisparityExtender:
     
@@ -149,21 +147,47 @@ class DisparityExtender:
             in the LiDAR data and returns them in an array.
             Possible Improvements: replace for loop with numpy array arithmetic
         """
-        differences = [0.] # set first element to 0
-        for i in range(1, len(ranges)):
-            differences.append(abs(ranges[i]-ranges[i-1]))
+
+        # diffi = [0.]  # set first element to 0
+        # for i in range(1, len(ranges)):
+        #    diffi.append(abs(ranges[i] - ranges[i - 1]))
+        # # return differences
+        # print("diffi: " + str(diffi))
+
+        # ranges2 = ranges
+        # ranges2.insert(0, 0.)
+        newranges = ranges
+        # np.insert(newranges, 0, 0.)
+
+        differences = abs(np.diff(newranges, n=1))
+        differences = np.insert(differences, 0, 0., axis=0)
+        # np.insert(differences, 0, 0.)
+        # differences.insert(0, 0.)
+        # np.insert(differences, 0, 0.)
+        # print(differences)
+        # diff = abs(differences)
+
         return differences
-    
+
     def get_disparities(self, differences, threshold):
         """ Gets the indexes of the LiDAR points that were greatly
             different to their adjacent point.
             Possible Improvements: replace for loop with numpy array arithmetic
         """
-        disparities = []
-        for index, difference in enumerate(differences):
-            if difference > threshold:
-                disparities.append(index)
+        # disparities = []
+        #
+        # for index, difference in enumerate(differences):
+        #     if difference > threshold:
+        #         disparities.append(index)
+        # # print(threshold)
+        # # print(disparities)
+        # return disparities
+        #disparities = np.empty((0, 1), int)
+
+        disparities = np.argwhere(differences > threshold)
+        print(disparities)
         return disparities
+
 
     def get_num_points_to_cover(self, dist, width):
         """ Returns the number of LiDAR points that correspond to a width at
