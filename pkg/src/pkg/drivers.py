@@ -188,7 +188,7 @@ class DisparityExtender:
 
 
     def get_num_points_to_cover(self, dist, width):
-        """ Returns the number of LiDAR points that correspond to a width at
+        """ Returns the number of LiDAR points that correspond t a width at
             a given distance.
             We calculate the angle that would span the width at this distance,
             then convert this angle to the number of LiDAR points that
@@ -276,3 +276,11 @@ class DisparityExtender:
                                                  len(proc_ranges))
         speed = self.SPEED
         return speed, steering_angle
+
+    def go_fast(self, ranges):
+        eighth = int(len(ranges) / 8)
+        points = np.array(ranges[eighth:-eighth])
+        close_idx = first_idx + np.argmin(points)
+        far_idx = first_idx + np.argmax(points)
+        close_dist = ranges[close_idx]
+
