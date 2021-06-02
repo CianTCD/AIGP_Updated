@@ -183,7 +183,9 @@ class DisparityExtender:
         #disparities = np.empty((0, 1), int)
 
         disparities = np.argwhere(differences > threshold)
-        print(disparities)
+        disparities = np.transpose(disparities)
+        # shape = disparities.shape
+        # print(disparities)
         return disparities
 
 
@@ -277,10 +279,12 @@ class DisparityExtender:
         speed = self.SPEED
         return speed, steering_angle
 
+    '''
     def go_fast(self, ranges):
         eighth = int(len(ranges) / 8)
         points = np.array(ranges[eighth:-eighth])
         close_idx = first_idx + np.argmin(points)
         far_idx = first_idx + np.argmax(points)
         close_dist = ranges[close_idx]
+        '''
 
