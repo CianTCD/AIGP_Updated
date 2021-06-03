@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 
 
@@ -126,7 +128,7 @@ class AnotherDriver:
 class DisparityExtender:
     CAR_WIDTH = 0.31
     # the min difference between adjacent LiDAR points for us to call them disparate
-    DIFFERENCE_THRESHOLD = 2.
+    DIFFERENCE_THRESHOLD = 1.9
     SPEED = 5.
     # the extra safety room we plan for along walls (as a percentage of car_width/2)
     SAFETY_PERCENTAGE = 300.
@@ -201,6 +203,9 @@ class DisparityExtender:
             Possible Improvements: use a different method to calculate the angle
         """
         angle = 2 * np.arcsin(width / (2 * dist))
+        # angle = math.atan2(width, dist)
+        # print("angle : " + str(angle))
+        # print("angle 2: " + str(angle2))
         num_points = int(np.ceil(angle / self.radians_per_point))
         return num_points
 
@@ -276,10 +281,10 @@ class DisparityExtender:
 
         if steering_angle == 0:
             self.SPEED = 900.
-        elif 0.009 >= steering_angle >= -0.009:
-            self.SPEED = 90.
+        elif 0.006 >= steering_angle >= -0.006:
+            self.SPEED = 70.
         else:
-            self.SPEED = 3.9
+            self.SPEED = 3.85
 
         # print(steering_angle)
         return steering_angle
@@ -295,8 +300,13 @@ class DisparityExtender:
         disparities = self.get_disparities(differences, self.DIFFERENCE_THRESHOLD)
         proc_ranges = self.extend_disparities(disparities, proc_ranges,
                                               self.CAR_WIDTH, self.SAFETY_PERCENTAGE)
+
+        print(proc_ranges[proc_ranges.argmax()])
+
         steering_angle = self.get_steering_angle(proc_ranges.argmax(),
                                                  len(proc_ranges))
+        if proc_ranges[proc_ranges.argmax()] <= 11 and self.SPEED > 5:
+            self.SPEED = 5.
         speed = self.SPEED
         return speed, steering_angle
 
