@@ -127,7 +127,7 @@ class DisparityExtender:
     CAR_WIDTH = 0.31
     # the min difference between adjacent LiDAR points for us to call them disparate
     DIFFERENCE_THRESHOLD = 2.
-    SPEED = 6.
+    SPEED = 5.
     # the extra safety room we plan for along walls (as a percentage of car_width/2)
     SAFETY_PERCENTAGE = 300.
 
@@ -185,7 +185,6 @@ class DisparityExtender:
         # disparities = np.transpose(disparities)
         # print(disparities)
         return disparities
-
 
     def get_num_points_to_cover(self, dist, width):
         """ Returns the number of LiDAR points that correspond t a width at
@@ -256,16 +255,14 @@ class DisparityExtender:
 
         for index in disparities:
             first_idx = index - 1
-            print(first_idx)
+            # print(first_idx)
             points = ranges[int(first_idx): int(first_idx + 2)]
             close_idx = first_idx + np.argmin(points)
             far_idx = first_idx + np.argmax(points)
             close_dist = ranges[close_idx]
-            num_points_to_cover = self.get_num_points_to_cover(close_dist,
-                                                                   width_to_cover)
+            num_points_to_cover = self.get_num_points_to_cover(close_dist, width_to_cover)
             cover_right = close_idx < far_idx
-            ranges = self.cover_points(num_points_to_cover, close_idx,
-                                            cover_right, ranges)
+            ranges = self.cover_points(num_points_to_cover, close_idx, cover_right, ranges)
 
         return ranges
 
@@ -276,6 +273,15 @@ class DisparityExtender:
         """
         lidar_angle = (range_index - (range_len / 2)) * self.radians_per_point
         steering_angle = np.clip(lidar_angle, np.radians(-90), np.radians(90))
+
+        if steering_angle == 0:
+            self.SPEED = 900.
+        elif 0.009 >= steering_angle >= -0.009:
+            self.SPEED = 90.
+        else:
+            self.SPEED = 3.9
+
+        # print(steering_angle)
         return steering_angle
 
     def process_lidar(self, ranges):
@@ -302,4 +308,3 @@ class DisparityExtender:
         far_idx = first_idx + np.argmax(points)
         close_dist = ranges[close_idx]
         '''
-
