@@ -17,7 +17,7 @@ from drivers import DisparityExtender
 drivers = [DisparityExtender()]
 
 # choose your racetrack here (SILVERSTONE, SILVERSTONE_OBS)
-RACETRACK = 'SILVERSTONE'
+RACETRACK = 'SILVERSTONE_OBS'
 
 
 class GymRunner(object):

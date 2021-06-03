@@ -281,8 +281,13 @@ class DisparityExtender:
 
         if steering_angle == 0:
             self.SPEED = 900.
+            print("mental spreed")
         elif 0.006 >= steering_angle >= -0.006:
-            self.SPEED = 70.
+            self.SPEED = 100.
+            print("supa spreed")
+        elif 0.015 >= steering_angle >= -0.015:
+            self.SPEED = 60.
+            print("inter spreed")
         else:
             self.SPEED = 3.85
 
@@ -301,12 +306,13 @@ class DisparityExtender:
         proc_ranges = self.extend_disparities(disparities, proc_ranges,
                                               self.CAR_WIDTH, self.SAFETY_PERCENTAGE)
 
-        print(proc_ranges[proc_ranges.argmax()])
+        # print(proc_ranges[proc_ranges.argmax()])
 
         steering_angle = self.get_steering_angle(proc_ranges.argmax(),
                                                  len(proc_ranges))
         if proc_ranges[proc_ranges.argmax()] <= 11 and self.SPEED > 5:
             self.SPEED = 5.
+            print("poopoo spreed")
         speed = self.SPEED
         return speed, steering_angle
 
