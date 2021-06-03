@@ -180,11 +180,9 @@ class DisparityExtender:
         # # print(threshold)
         # # print(disparities)
         # return disparities
-        #disparities = np.empty((0, 1), int)
 
         disparities = np.argwhere(differences > threshold)
-        disparities = np.transpose(disparities)
-        # shape = disparities.shape
+        # disparities = np.transpose(disparities)
         # print(disparities)
         return disparities
 
@@ -222,13 +220,15 @@ class DisparityExtender:
         if cover_right:
             for i in range(num_points):
                 next_idx = start_idx + 1 + i
-                if next_idx >= len(ranges): break
+                if next_idx >= len(ranges):
+                    break
                 if ranges[next_idx] > new_dist:
                     ranges[next_idx] = new_dist
         else:
             for i in range(num_points):
                 next_idx = start_idx - 1 - i
-                if next_idx < 0: break
+                if next_idx < 0:
+                    break
                 if ranges[next_idx] > new_dist:
                     ranges[next_idx] = new_dist
         return ranges
@@ -241,17 +241,32 @@ class DisparityExtender:
             Possible Improvements: reduce to fewer lines
         """
         width_to_cover = (car_width / 2) * (1 + extra_pct / 100)
+        # for index in disparities:
+        #     first_idx = index - 1
+        #     print(first_idx)
+        #     points = ranges[first_idx:first_idx + 2]
+        #     close_idx = first_idx + np.argmin(points)
+        #     far_idx = first_idx + np.argmax(points)
+        #     close_dist = ranges[close_idx]
+        #     num_points_to_cover = self.get_num_points_to_cover(close_dist,
+        #                                                        width_to_cover)
+        #     cover_right = close_idx < far_idx
+        #     ranges = self.cover_points(num_points_to_cover, close_idx,
+        #                                cover_right, ranges)
+
         for index in disparities:
             first_idx = index - 1
-            points = ranges[first_idx:first_idx + 2]
+            print(first_idx)
+            points = ranges[int(first_idx): int(first_idx + 2)]
             close_idx = first_idx + np.argmin(points)
             far_idx = first_idx + np.argmax(points)
             close_dist = ranges[close_idx]
             num_points_to_cover = self.get_num_points_to_cover(close_dist,
-                                                               width_to_cover)
+                                                                   width_to_cover)
             cover_right = close_idx < far_idx
             ranges = self.cover_points(num_points_to_cover, close_idx,
-                                       cover_right, ranges)
+                                            cover_right, ranges)
+
         return ranges
 
     def get_steering_angle(self, range_index, range_len):
