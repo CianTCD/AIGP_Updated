@@ -11,10 +11,10 @@ sys.path.append(current_dir)
 
 # import your drivers here
 # roboto test
-from drivers import DisparityExtender
+from drivers import DisparityExtender, SimpleDriver, GapFollower
 
 # choose your drivers here (1-4)
-drivers = [DisparityExtender()]
+drivers = [DisparityExtender(), GapFollower(), GapFollower(), DisparityExtender()]
 
 # choose your racetrack here (SILVERSTONE, SILVERSTONE_OBS)
 RACETRACK = 'SILVERSTONE_OBS'

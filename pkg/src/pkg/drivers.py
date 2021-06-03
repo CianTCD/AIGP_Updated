@@ -1,4 +1,5 @@
 import math
+import time
 
 import numpy as np
 
@@ -92,7 +93,7 @@ class GapFollower:
             speed = self.CORNERS_SPEED
         else:
             speed = self.STRAIGHTS_SPEED
-        print('Steering angle in degrees: {}'.format((steering_angle / (np.pi / 2)) * 90))
+        # print('Steering angle in degrees: {}'.format((steering_angle / (np.pi / 2)) * 90))
         return speed, steering_angle
 
 
@@ -127,11 +128,12 @@ class AnotherDriver:
 
 class DisparityExtender:
     CAR_WIDTH = 0.31
+    count = 0
     # the min difference between adjacent LiDAR points for us to call them disparate
-    DIFFERENCE_THRESHOLD = 1.9
-    SPEED = 5.
+    DIFFERENCE_THRESHOLD = 2.5
+    SPEED = 1500.
     # the extra safety room we plan for along walls (as a percentage of car_width/2)
-    SAFETY_PERCENTAGE = 300.
+    SAFETY_PERCENTAGE = 350.
 
     def preprocess_lidar(self, ranges):
         """ Any preprocessing of the LiDAR data can be done in this function.
@@ -277,17 +279,23 @@ class DisparityExtender:
             Possible improvements: smoothing of aggressive steering angles
         """
         lidar_angle = (range_index - (range_len / 2)) * self.radians_per_point
-        steering_angle = np.clip(lidar_angle, np.radians(-90), np.radians(90))
+        steering_angle = np.clip(lidar_angle, np.radians(-70), np.radians(70))
 
-        if steering_angle == 0:
-            self.SPEED = 900.
+        if steering_angle == 0.:
+            self.SPEED = 6500.
             print("mental spreed")
-        elif 0.006 >= steering_angle >= -0.006:
-            self.SPEED = 100.
-            print("supa spreed")
-        elif 0.015 >= steering_angle >= -0.015:
-            self.SPEED = 60.
+        elif 0.007 >= steering_angle >= -0.007 and self.SPEED != 900.:
+            self.SPEED = 900.
+            # print("supa spreed")
+        elif 0.015 >= steering_angle >= -0.015 and self.SPEED != 800.:
+            self.SPEED = 800.
             print("inter spreed")
+        # elif 0.02 >= steering_angle >= -0.02 and self.SPEED != 400.:
+        #     self.SPEED = 400.
+        #     print("inter spreed")
+                               # elif 0.02 >= steering_angle >= -0.02:
+        #     self.SPEED = 40.
+        #     print("small inter spreed")
         else:
             self.SPEED = 3.85
 
@@ -307,13 +315,24 @@ class DisparityExtender:
                                               self.CAR_WIDTH, self.SAFETY_PERCENTAGE)
 
         # print(proc_ranges[proc_ranges.argmax()])
-
         steering_angle = self.get_steering_angle(proc_ranges.argmax(),
                                                  len(proc_ranges))
-        if proc_ranges[proc_ranges.argmax()] <= 11 and self.SPEED > 5:
+
+        dist = proc_ranges[proc_ranges.argmax()]
+
+        if dist <= 10. and self.SPEED > 5:
             self.SPEED = 5.
-            print("poopoo spreed")
+            # if dist <= 5:
+            #     self.SPEED = 2.
+            # print("poopoo spreed")
         speed = self.SPEED
+
+        # if dist >= 30 and abs(steering_angle) <= 0.01:
+        #     # while self.count < 1:
+        #     #     speed = 1500
+        #     #     self.count += 1
+        #     speed = 9000
+
         return speed, steering_angle
 
     '''
